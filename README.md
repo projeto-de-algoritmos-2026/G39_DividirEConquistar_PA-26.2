@@ -24,13 +24,18 @@ O site tem três abas:
 
 ## Como rodar
 
-Não precisa instalar nada. É só clonar e abrir o `index.html` no navegador:
+Não precisa instalar nada.
 
-```bash
-git clone https://github.com/projeto-de-algoritmos-2026/G39_DividirEConquistar_PA-26.2.git
-```
+1. Clone o repositório:
 
-Os testes do algoritmo ficam no `testes.html`, que também é só abrir.
+   ```bash
+   git clone https://github.com/projeto-de-algoritmos-2026/G39_DividirEConquistar_PA-26.2.git
+   cd G39_DividirEConquistar_PA-26.2
+   ```
+
+2. Abra o `index.html` no navegador: dois cliques no arquivo, ou `xdg-open index.html` no Linux (`open index.html` no Mac).
+
+Os testes do algoritmo ficam no `testes.html`, que abre do mesmo jeito.
 
 ## O algoritmo
 
