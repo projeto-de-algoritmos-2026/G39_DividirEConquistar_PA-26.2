@@ -1,22 +1,20 @@
-// par de pontos mais proximos: forca bruta (gabarito) e dividir e conquistar.
-//
-// ponto: { id, x, y }. as duas funcoes devolvem { best: { a, b, d }, comps },
-// onde a e b sao os proprios objetos de ponto recebidos, d e a distancia
-// entre eles e comps e quantas distancias foram calculadas.
+// par de pontos mais proximos, por forca bruta e por dividir e conquistar.
+// ponto = { id, x, y }
+// as duas funcoes devolvem { best: { a, b, d }, comps }: o par, a distancia
+// entre eles e quantas distancias foram calculadas
 
-// largura do mapa (espaco logico do canvas). so serve pra dar os limites da
-// regiao da primeira chamada nos eventos da animacao.
+// so usado pra animacao saber onde comeca e termina a primeira regiao
 const LARGURA_MAPA = 800;
 
-// Math.sqrt em vez de Math.hypot: o hypot e varias vezes mais lento, e a
-// forca bruta com 5000 pontos chama essa funcao 12,5 milhoes de vezes
+// sem Math.hypot porque ele e bem mais lento, e na forca bruta com 5000 pontos
+// essa funcao roda 12,5 milhoes de vezes
 function distancia(a, b) {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// compara todos os pares: n(n-1)/2 distancias, O(n^2)
+// compara todo mundo com todo mundo: n(n-1)/2 distancias, O(n^2)
 function forcaBruta(pontos) {
   let best = null;
   let comps = 0;
@@ -31,19 +29,19 @@ function forcaBruta(pontos) {
 }
 
 // dividir e conquistar, O(n log n).
-// se "eventos" for um array, cada passo e registrado nele pra animacao.
+// se receber um array em "eventos", vai guardando cada passo nele (pra animacao)
 function parMaisProximo(pontos, eventos = null) {
   let comps = 0;
   if (pontos.length < 2) return { best: null, comps };
 
-  // ordena por x e por y uma unica vez, antes da recursao. reordenar a cada
-  // nivel deixaria o algoritmo O(n log^2 n).
-  // desempate por y e id pra pontos com o mesmo x nao baguncarem a divisao.
+  // ordena por x e por y uma vez so, aqui fora. se ordenasse dentro da
+  // recursao ficaria O(n log^2 n).
+  // o desempate por y e id e pra pontos com o mesmo x nao darem problema na divisao
   const Px = [...pontos].sort((a, b) => a.x - b.x || a.y - b.y || a.id - b.id);
   const Py = [...pontos].sort((a, b) => a.y - b.y || a.x - b.x || a.id - b.id);
 
-  // Px e Py tem os mesmos pontos (os da regiao atual), ordenados por x e por y.
-  // lo e hi sao os limites em x da regiao, so pra animacao saber onde desenhar.
+  // Px e Py sao os pontos da regiao atual, ordenados por x e por y.
+  // lo e hi (limites da regiao em x) so servem pra animacao
   function resolver(Px, Py, lo, hi, depth) {
     const n = Px.length;
 
@@ -67,8 +65,8 @@ function parMaisProximo(pontos, eventos = null) {
     const linha = (Px[m - 1].x + Px[m].x) / 2;
     if (eventos) eventos.push({ t: "divide", lo, hi, x: linha, depth, n, m, comps });
 
-    // separa Py nas duas metades sem reordenar: percorre na ordem de y e
-    // manda cada ponto pro lado em que ele ficou em Px
+    // separa o Py em esquerda e direita sem ordenar de novo: vai na ordem
+    // de y e coloca cada ponto no lado em que ele caiu no Px
     const idsEsquerda = new Set();
     for (let i = 0; i < m; i++) idsEsquerda.add(Px[i].id);
     const Ly = [];
@@ -82,16 +80,16 @@ function parMaisProximo(pontos, eventos = null) {
     const melhorEsquerda = resolver(Px.slice(0, m), Ly, lo, linha, depth + 1);
     const melhorDireita = resolver(Px.slice(m), Ry, linha, hi, depth + 1);
 
-    // combinar: o par mais proximo pode ter um ponto de cada lado. se tiver,
-    // os dois estao a menos de delta da linha.
+    // combinar: pode ser que o par mais proximo tenha um ponto de cada lado.
+    // se tiver, os dois estao a menos de delta da linha
     let best = melhorEsquerda.d <= melhorDireita.d ? melhorEsquerda : melhorDireita;
     const delta = best.d;
     const faixa = Py.filter(p => Math.abs(p.x - linha) < delta);
     const idsFaixa = eventos ? faixa.map(p => p.id) : null;
     if (eventos) eventos.push({ t: "strip", lo, hi, x: linha, delta, ids: idsFaixa, depth, best, comps });
 
-    // na faixa (ordenada por y), cada ponto so precisa ser comparado com os
-    // seguintes que estao a menos de delta em y -- no maximo 7 deles
+    // a faixa ja esta ordenada por y. cada ponto so compara com os proximos
+    // que estao a menos de delta em y (no maximo 7, explicado no README)
     for (let i = 0; i < faixa.length; i++) {
       for (let j = i + 1; j < faixa.length && faixa[j].y - faixa[i].y < best.d; j++) {
         comps++;
