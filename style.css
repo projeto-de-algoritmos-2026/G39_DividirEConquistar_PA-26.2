@@ -1,5 +1,4 @@
-/* cores e fontes do site. o canvas tambem le essas variaveis (desenho.js,
-   jogo.js, animacao.js, benchmark.js), entao mudar aqui muda o mapa junto */
+/* cores e fontes. o canvas tambem usa essas cores, entao mudar aqui muda o mapa junto */
 :root {
   --cor-fundo: #fbf4f8;
   --cor-superficie: #ffffff;
@@ -109,7 +108,7 @@ canvas {
 }
 #cvJogo { cursor: pointer; }
 
-/* botoes e seletores (inclusive os criados por animacao.js e benchmark.js) */
+/* botoes e selects (inclusive os que o animacao.js e o benchmark.js criam) */
 .painel button {
   font: 700 14px var(--fonte-texto);
   color: var(--cor-texto);
