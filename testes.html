@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testes · par mais próximo</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 860px; margin: 0 auto; padding: 24px 16px; line-height: 1.5; }
+  h1 { margin-bottom: 4px; }
+  .resumo { font-size: 20px; font-weight: 700; margin: 16px 0; }
+  .ok { color: #178f79; }
+  .falha { color: #c0264f; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  pre { background: #f4f4f4; padding: 8px; overflow-x: auto; font-size: 12px; max-height: 200px; }
+</style>
+</head>
+<body>
+  <h1>Testes do par mais próximo</h1>
+  <p>Compara o dividir e conquistar (<code>parMaisProximo</code>) com a força bruta (<code>forcaBruta</code>), que serve de gabarito. Os dois precisam achar a mesma distância.</p>
+  <div class="resumo" id="resumo">Rodando…</div>
+  <table>
+    <thead><tr><th>Caso</th><th>Pontos</th><th>Distância</th><th>Comparações FB</th><th>Comparações D&amp;C</th><th>Resultado</th></tr></thead>
+    <tbody id="especiais"></tbody>
+  </table>
+  <div id="falhas"></div>
+
+  <script src="par-mais-proximo.js"></script>
+  <script>
+    // como as coordenadas sao numeros quebrados, compara com uma folga minima
+    const mesmaDistancia = (d1, d2) => Math.abs(d1 - d2) < 1e-9;
+
+    // gera n pontos aleatorios. "inteiros" deixa as coordenadas inteiras num
+    // intervalo pequeno, o que forca empates de x, de y e pontos repetidos
+    function pontosAleatorios(n, inteiros) {
+      const pontos = [];
+      for (let i = 0; i < n; i++) {
+        const x = inteiros ? Math.floor(Math.random() * 50) : Math.random() * 1000;
+        const y = inteiros ? Math.floor(Math.random() * 50) : Math.random() * 1000;
+        pontos.push({ id: i + 1, x, y });
+      }
+      return pontos;
+    }
+
+    const comIds = coords => coords.map(([x, y], i) => ({ id: i + 1, x, y }));
+
+    const CASOS_ESPECIAIS = [
+      ["2 pontos", comIds([[0, 0], [3, 4]])],
+      ["3 pontos", comIds([[0, 0], [10, 0], [4, 1]])],
+      ["4 pontos (primeira divisão)", comIds([[0, 0], [1, 5], [2, 0], [3, 5]])],
+      ["todos com o mesmo x", comIds(Array.from({ length: 40 }, (_, i) => [7, i * i % 97]))],
+      ["todos com o mesmo y", comIds(Array.from({ length: 40 }, (_, i) => [i * 13 % 101, 7]))],
+      ["pontos repetidos (distância 0)", comIds([[5, 5], [1, 9], [5, 5], [8, 2], [3, 3], [9, 9]])],
+      ["todos no mesmo lugar", comIds(Array.from({ length: 10 }, () => [2, 2]))],
+      ["grade regular 10 × 10", comIds(Array.from({ length: 100 }, (_, i) => [(i % 10) * 10, Math.floor(i / 10) * 10]))],
+      ["par mais próximo cruzando a divisão", comIds([[0, 0], [0, 100], [49, 50], [51, 50], [100, 0], [100, 100]])],
+      ["pontos em diagonal", comIds(Array.from({ length: 30 }, (_, i) => [i * 3, i * 3]))],
+    ];
+
+    const falhas = [];
+    function testar(nome, pontos) {
+      const fb = forcaBruta(pontos);
+      const dc = parMaisProximo(pontos);
+      const passou = mesmaDistancia(fb.best.d, dc.best.d) && mesmaDistancia(dc.best.d, Math.hypot(dc.best.a.x - dc.best.b.x, dc.best.a.y - dc.best.b.y));
+      if (!passou) falhas.push({ nome, pontos, fb: fb.best.d, dc: dc.best.d });
+      return { passou, fb, dc };
+    }
+
+    setTimeout(() => {
+      let total = 0, passaram = 0;
+
+      const linhas = CASOS_ESPECIAIS.map(([nome, pontos]) => {
+        const { passou, fb, dc } = testar(nome, pontos);
+        total++; if (passou) passaram++;
+        return `<tr><td>${nome}</td><td class="num">${pontos.length}</td><td class="num">${dc.best.d.toFixed(3)}</td>
+          <td class="num">${fb.comps}</td><td class="num">${dc.comps}</td>
+          <td class="${passou ? "ok" : "falha"}">${passou ? "passou" : "FALHOU"}</td></tr>`;
+      });
+      document.getElementById("especiais").innerHTML = linhas.join("");
+
+      // 500 conjuntos aleatorios de 2 a 2000 pontos, mais pequenos que grandes
+      // (a forca bruta e lenta), metade com coordenadas inteiras
+      for (let i = 0; i < 500; i++) {
+        const n = 2 + Math.floor(Math.random() ** 3 * 1999);
+        const { passou } = testar(`aleatório #${i + 1}`, pontosAleatorios(n, i % 2 === 0));
+        total++; if (passou) passaram++;
+      }
+
+      const resumo = document.getElementById("resumo");
+      resumo.textContent = `${passaram} de ${total} testes passaram`;
+      resumo.className = "resumo " + (passaram === total ? "ok" : "falha");
+
+      document.getElementById("falhas").innerHTML = falhas.slice(0, 5).map(f =>
+        `<h3 class="falha">${f.nome}: força bruta ${f.fb}, D&amp;C ${f.dc}</h3>
+         <pre>${JSON.stringify(f.pontos.map(p => [p.x, p.y]))}</pre>`
+      ).join("");
+    }, 30);
+  </script>
+</body>
+</html>
