@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vizinhas de Pista</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="pagina">
+    <header class="cabecalho">
+      <span class="selo">G39 · Dividir e Conquistar</span>
+      <h1>Vizinhas de <span>Pista</span></h1>
+      <p class="missao">Encontre as duas amigas que estacionaram mais perto uma da outra. Depois veja como o algoritmo de dividir e conquistar acha a resposta sem comparar todos os pares.</p>
+    </header>
+
+    <nav class="abas" role="tablist">
+      <button type="button" class="aba" role="tab" id="aba-jogar" data-aba="jogar">1. Jogar</button>
+      <button type="button" class="aba" role="tab" id="aba-algoritmo" data-aba="algoritmo">2. Ver o algoritmo</button>
+      <button type="button" class="aba" role="tab" id="aba-desempenho" data-aba="desempenho">3. Desempenho</button>
+    </nav>
+
+    <!-- aba 1: jogo (jogo.js) -->
+    <section class="painel" id="view-jogar">
+      <div class="barra">
+        <div class="grupo">
+          <span class="numero" id="cronometro">0,0 s</span>
+          <span class="dica" id="dica">Clique em duas amigas.</span>
+        </div>
+        <div class="grupo">
+          <label for="nJogo">Amigas
+            <select id="nJogo"><option>20</option><option selected>35</option><option>60</option></select>
+          </label>
+          <button type="button" class="principal" id="novaRodada">Nova rodada</button>
+        </div>
+      </div>
+      <canvas id="cvJogo" aria-label="Mapa com as amigas estacionadas"></canvas>
+      <p class="mensagem" id="msgJogo"></p>
+      <div class="placar" id="placarJogo" hidden>
+        <div class="voce"><span>Seu par</span><strong id="placarVoce">–</strong></div>
+        <div class="par"><span>Par mais próximo</span><strong id="placarMelhor">–</strong></div>
+        <div class="par"><span>Comparações (D&amp;C)</span><strong id="placarDc">–</strong></div>
+        <div class="bruta"><span>Força bruta faria</span><strong id="placarForcaBruta">–</strong></div>
+      </div>
+      <p class="legenda">
+        <span><i class="traco voce"></i>seu par</span>
+        <span><i class="traco par"></i>par mais próximo (algoritmo)</span>
+      </p>
+    </section>
+
+    <!-- aba 2: animacao do algoritmo (animacao.js monta os controles em volta do canvas) -->
+    <section class="painel" id="view-algoritmo" hidden>
+      <canvas id="cvAlg" aria-label="Animação do algoritmo de par mais próximo"></canvas>
+      <p class="legenda">
+        <span><i class="traco destaque"></i>par sendo comparado</span>
+        <span><i class="traco par"></i>melhor par de cada região resolvida</span>
+        <span><i class="traco faixa"></i>faixa de largura 2δ</span>
+      </p>
+    </section>
+
+    <!-- aba 3: desempenho (benchmark.js preenche) -->
+    <section class="painel" id="view-desempenho" hidden></section>
+
+    <footer class="rodape">
+      <p>Projeto de Algoritmos · Dividir e Conquistar · par de pontos mais próximos em O(n log n). <a href="testes.html">Ver os testes do algoritmo</a>.</p>
+    </footer>
+  </div>
+
+  <script src="par-mais-proximo.js"></script>
+  <script src="desenho.js"></script>
+  <script src="jogo.js"></script>
+  <script src="animacao.js"></script>
+  <script src="benchmark.js"></script>
+  <script>
+    // abas: a aba ativa fica no endereco (#jogar, #algoritmo, #desempenho)
+    const ABAS = ["jogar", "algoritmo", "desempenho"];
+
+    function mostrarAba(nome) {
+      if (!ABAS.includes(nome)) nome = "jogar";
+      for (const aba of ABAS) {
+        document.getElementById("view-" + aba).hidden = aba !== nome;
+        document.getElementById("aba-" + aba).setAttribute("aria-selected", aba === nome);
+      }
+    }
+
+    document.querySelectorAll(".aba").forEach(botao => {
+      botao.addEventListener("click", () => { location.hash = botao.dataset.aba; });
+    });
+    window.addEventListener("hashchange", () => mostrarAba(location.hash.slice(1)));
+    mostrarAba(location.hash.slice(1));
+  </script>
+</body>
+</html>
