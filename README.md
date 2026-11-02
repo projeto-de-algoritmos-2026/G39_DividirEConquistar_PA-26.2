@@ -1,4 +1,58 @@
-# G39_DividirEConquistar_PA-26.2
+# Vizinhas de Pista
+
+**Grupo:** G39<br>
+**Conteúdo da disciplina:** Dividir e Conquistar
+
+## Alunos
+
+| Matrícula | Aluno |
+| :---: | :--- |
+| 231026680 | Cibelly Lourenço |
+| 211039500 | Isabelle da Costa |
+
+## Sobre
+
+**Vizinhas de Pista** é um jogo sobre o problema do **par de pontos mais próximos**. Um grupo de amigas estacionou espalhado pelo mapa, e a missão do jogador é descobrir quais duas pararam mais perto uma da outra. Com dezenas de personagens na tela, o olho engana, e o algoritmo de dividir e conquistar mostra a resposta certa.
+
+O site tem três abas:
+
+1. **Jogar:** o jogador clica nas duas amigas que acha mais próximas, contra o relógio. No fim, o jogo mostra o par escolhido, o par certo, as distâncias e quantas comparações o algoritmo fez em relação à força bruta.
+2. **Ver o algoritmo:** a recursão passo a passo no mapa: a linha que divide os pontos ao meio, os casos base, a faixa de largura 2δ em volta da linha e o melhor par de cada região. Dá para reproduzir, pausar, avançar e voltar.
+3. **Desempenho:** mede, para 10 a 5.000 pontos, quantas distâncias e quanto tempo a força bruta e o dividir e conquistar gastam, com tabela e gráfico.
+
+## Como rodar
+
+Não precisa instalar nada. Basta clonar o repositório e abrir o `index.html` no navegador (dois cliques no arquivo):
+
+```bash
+git clone https://github.com/projeto-de-algoritmos-2026/G39_DividirEConquistar_PA-26.2.git
+cd G39_DividirEConquistar_PA-26.2
+```
+
+Para rodar os testes do algoritmo, abra o `testes.html` do mesmo jeito.
+
+## Como jogar
+
+1. Na aba **Jogar**, escolha quantas amigas aparecem no mapa (20, 35 ou 60).
+2. Clique nas duas que você acha que estão mais perto. Clicar de novo numa já escolhida desmarca.
+3. Ao escolher a segunda, o cronômetro para e o jogo mostra o seu par (linha amarela tracejada) e o par mais próximo (linha verde).
+4. Clique em **Nova rodada** para jogar de novo com outras posições.
+5. Na aba **Ver o algoritmo**, aperte **Reproduzir** para ver como o algoritmo chegou na resposta.
+
+## Arquivos
+
+| Arquivo | Para que serve |
+| --- | --- |
+| `index.html` | Página do jogo, com as três abas. |
+| `style.css` | Cores, fontes e layout. As cores do mapa também vêm daqui. |
+| `par-mais-proximo.js` | `parMaisProximo` (dividir e conquistar) e `forcaBruta` (gabarito). |
+| `desenho.js` | Funções de desenho no canvas: mapa, personagens e linhas entre pares. |
+| `jogo.js` | Aba "Jogar": pontos aleatórios, cliques, cronômetro e resultado. |
+| `animacao.js` | Aba "Ver o algoritmo": reproduz cada passo da recursão no mapa. |
+| `benchmark.js` | Aba "Desempenho": mede comparações e tempo dos dois algoritmos. |
+| `testes.html` | Compara os dois algoritmos em mais de 500 conjuntos de pontos. |
+
+---
 
 ## O problema: par de pontos mais próximos
 
@@ -14,16 +68,9 @@ O algoritmo de **dividir e conquistar** resolve o mesmo problema em **O(n log n)
 
 ---
 
-## Arquivos do algoritmo
+## Interface do algoritmo
 
-| Arquivo | Para que serve |
-| --- | --- |
-| `par-mais-proximo.js` | `parMaisProximo` (dividir e conquistar) e `forcaBruta` (gabarito). |
-| `testes.html` | Compara os dois algoritmos em mais de 500 conjuntos de pontos. Basta abrir no navegador. |
-| `animacao.js` | Aba "Ver o algoritmo": reproduz cada passo da recursão no mapa. |
-| `benchmark.js` | Aba "Desempenho": mede comparações e tempo dos dois algoritmos. |
-
-As duas funções recebem uma lista de pontos `{ id, x, y }` e devolvem `{ best: { a, b, d }, comps }`: o par mais próximo, a distância entre eles e quantas distâncias foram calculadas.
+As duas funções de `par-mais-proximo.js` recebem uma lista de pontos `{ id, x, y }` e devolvem `{ best: { a, b, d }, comps }`: o par mais próximo, a distância entre eles e quantas distâncias foram calculadas.
 
 ---
 
