@@ -1,14 +1,13 @@
-/* cores e fontes. o canvas tambem usa essas cores, entao mudar aqui muda o mapa junto */
 :root {
   --cor-fundo: #fbf4f8;
   --cor-superficie: #ffffff;
   --cor-texto: #2b1d34;
   --cor-texto-suave: #76627f;
   --cor-linha: #ead9e4;
-  --cor-destaque: #d6286f;   /* botoes, par sendo comparado, forca bruta */
-  --cor-par: #178f79;        /* par mais proximo, dividir e conquistar */
-  --cor-faixa: #e09b00;      /* faixa de largura 2 delta */
-  --cor-voce: #e09b00;       /* par escolhido pelo jogador */
+  --cor-destaque: #d6286f;
+  --cor-par: #178f79;
+  --cor-faixa: #e09b00;
+  --cor-voce: #e09b00;
   --cor-mapa: #f1faf4;
   --cor-rua: #dceee3;
 
@@ -56,7 +55,6 @@ body {
   min-height: 100vh;
 }
 
-/* ---------- fundo com aura animada ---------- */
 .aura-fundo {
   position: fixed;
   inset: 0;
@@ -134,7 +132,6 @@ body {
   .bolha { animation: none !important; }
 }
 
-/* ---------- tela inicial ---------- */
 .tela-inicio {
   min-height: 100vh;
   display: grid;
@@ -255,7 +252,6 @@ body {
   border-color: var(--cor-texto-suave);
 }
 
-/* ---------- cabecalho do app (dentro das abas) ---------- */
 .app .cabecalho { position: relative; }
 .app .voltar {
   justify-self: start;
@@ -272,7 +268,6 @@ body {
 }
 .app .voltar:hover { color: var(--cor-destaque); transform: translateX(-2px); }
 
-/* ---------- modal "como jogar" ---------- */
 .modal-instrucoes {
   max-width: 520px;
   width: calc(100% - 40px);
@@ -318,7 +313,6 @@ body {
   gap: 20px;
 }
 
-/* ---------- cabecalho e abas ---------- */
 .cabecalho { display: grid; gap: 6px; }
 .selo {
   justify-self: start;
@@ -353,7 +347,6 @@ h1 span { color: var(--cor-destaque); }
 }
 .aba[aria-selected="true"] { background: var(--cor-texto); color: var(--cor-fundo); border-color: var(--cor-texto); }
 
-/* ---------- paineis ---------- */
 .painel {
   background: var(--cor-superficie);
   border: 2px solid var(--cor-linha);
@@ -373,7 +366,6 @@ canvas {
 }
 #cvJogo { cursor: pointer; }
 
-/* botoes e selects (inclusive os que o animacao.js e o benchmark.js criam) */
 .painel button {
   font: 700 14px var(--fonte-texto);
   color: var(--cor-texto);
@@ -414,7 +406,6 @@ button:focus-visible, select:focus-visible { outline: 3px solid var(--cor-faixa)
 }
 .mensagem strong, .alg-mensagem strong { font-family: var(--fonte-titulo); font-size: 19px; }
 
-/* placar do jogo e da animacao */
 .placar, .alg-placar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -448,7 +439,6 @@ button:focus-visible, select:focus-visible { outline: 3px solid var(--cor-faixa)
 .traco.destaque { background: var(--cor-destaque); }
 .traco.faixa { background: var(--cor-faixa); }
 
-/* ---------- desempenho (benchmark.js) ---------- */
 .benchmark { display: grid; gap: 12px; min-width: 0; }
 .benchmark-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .benchmark-topo h2 { font-family: var(--fonte-titulo); font-size: 20px; margin: 0; }
@@ -461,7 +451,6 @@ th:first-child, td:first-child { text-align: left; }
 th { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--cor-texto-suave); }
 td { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; }
 
-/* ---------- rodape ---------- */
 .rodape { font-size: 14px; color: var(--cor-texto-suave); }
 .rodape p { margin: 0; }
 .rodape a { color: var(--cor-destaque); }

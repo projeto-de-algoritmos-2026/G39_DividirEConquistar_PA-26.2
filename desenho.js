@@ -1,14 +1,8 @@
-// coisas usadas pelo jogo e pela animacao: pontos aleatorios e desenho no canvas.
-// tudo e desenhado num mapa de 800 x 480, e o prepCanvas escala pro tamanho da tela
-
 const MAPA = { largura: 800, altura: 480 };
 const MARGEM_MAPA = 32;
 
-// uma cor por personagem, escolhida pelo id
 const CORES_PERSONAGEM = ["#ff7aa8", "#6fd0bb", "#ffc94d", "#a08fff", "#ff9f6b", "#6cb8ff"];
 
-// sorteia n pontos no mapa, sem deixar dois mais perto que distanciaMinima
-// (senao ficam um em cima do outro e nao da pra clicar)
 function pontosAleatorios(n, distanciaMinima) {
   const pontos = [];
   let tentativas = 0;
@@ -24,13 +18,10 @@ function pontosAleatorios(n, distanciaMinima) {
   return pontos;
 }
 
-// pega uma cor do style.css, ex.: corCSS("--cor-mapa", "#f1faf4")
 function corCSS(nome, padrao) {
   return getComputedStyle(document.documentElement).getPropertyValue(nome).trim() || padrao;
 }
 
-// deixa o canvas do tamanho que ele ocupa na tela (contando o devicePixelRatio,
-// pra nao ficar borrado no celular) e devolve o ctx ja na escala do mapa
 function prepCanvas(canvas) {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
@@ -44,7 +35,6 @@ function prepCanvas(canvas) {
   return ctx;
 }
 
-// fundo do mapa: gramado com ruas em grade
 function desenhaMapa(ctx) {
   ctx.fillStyle = corCSS("--cor-mapa", "#f1faf4");
   ctx.fillRect(0, 0, MAPA.largura, MAPA.altura);
@@ -68,8 +58,6 @@ function desenhaMapa(ctx) {
   ctx.restore();
 }
 
-// apagada: fica transparente | anel: cor do contorno em volta |
-// rotulo: mostra o numero no lugar do rostinho (usado na animacao)
 function desenhaPersonagem(ctx, ponto, { apagada = false, anel = null, rotulo = false } = {}) {
   const { x, y } = ponto;
   const corRosto = "#2b1d34";
@@ -100,7 +88,6 @@ function desenhaPersonagem(ctx, ponto, { apagada = false, anel = null, rotulo = 
     ctx.textBaseline = "middle";
     ctx.fillText(ponto.id, x, y + 0.5);
   } else {
-    // olhos e sorriso
     ctx.beginPath();
     ctx.arc(x - 3, y - 1.5, 1.6, 0, Math.PI * 2);
     ctx.arc(x + 3, y - 1.5, 1.6, 0, Math.PI * 2);
@@ -114,7 +101,6 @@ function desenhaPersonagem(ctx, ponto, { apagada = false, anel = null, rotulo = 
   ctx.restore();
 }
 
-// linha entre dois pontos. texto aparece no meio dela (a distancia, por exemplo)
 function linhaPar(ctx, a, b, cor, { largura = 3, tracejado = false, texto = null } = {}) {
   ctx.save();
   ctx.strokeStyle = cor;

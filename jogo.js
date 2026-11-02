@@ -1,11 +1,8 @@
-// aba "Jogar": o jogador escolhe as duas amigas que acha mais proximas
-// e no fim compara com a resposta do parMaisProximo
-
 function iniciarJogo() {
   const canvas = document.getElementById("cvJogo");
   if (!canvas) return;
 
-  const RAIO_CLIQUE = 22; // quao longe da personagem o clique ainda conta
+  const RAIO_CLIQUE = 22;
 
   const jogo = { pontos: [], escolhidas: [], resultado: null, inicio: 0, fim: 0, quadro: 0 };
 
@@ -16,7 +13,6 @@ function iniciarJogo() {
 
   function novaRodada() {
     const n = Number($("nJogo").value);
-    // com 60 amigas precisa apertar um pouco mais pra caber todo mundo
     jogo.pontos = pontosAleatorios(n, n > 40 ? 26 : 34);
     jogo.escolhidas = [];
     jogo.resultado = null;
@@ -36,7 +32,7 @@ function iniciarJogo() {
   }
 
   function desenhar() {
-    if (canvas.clientWidth === 0) return; // aba escondida
+    if (canvas.clientWidth === 0) return;
     const ctx = prepCanvas(canvas);
     const corVoce = corCSS("--cor-voce", "#e09b00");
     const corPar = corCSS("--cor-par", "#178f79");
@@ -84,7 +80,6 @@ function iniciarJogo() {
 
   canvas.addEventListener("click", evento => {
     if (jogo.resultado) return;
-    // posicao do clique na escala do mapa (800 x 480)
     const caixa = canvas.getBoundingClientRect();
     const x = (evento.clientX - caixa.left) * MAPA.largura / caixa.width;
     const y = (evento.clientY - caixa.top) * MAPA.altura / caixa.height;
@@ -97,7 +92,6 @@ function iniciarJogo() {
     }
     if (!alvo) return;
 
-    // clicar de novo numa ja escolhida desmarca
     const indice = jogo.escolhidas.indexOf(alvo);
     if (indice >= 0) jogo.escolhidas.splice(indice, 1);
     else jogo.escolhidas.push(alvo);
@@ -110,7 +104,6 @@ function iniciarJogo() {
   $("novaRodada").addEventListener("click", novaRodada);
   $("nJogo").addEventListener("change", novaRodada);
 
-  // redesenha quando a aba aparece, a janela muda de tamanho ou o tema muda
   new ResizeObserver(desenhar).observe(canvas);
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", desenhar);
 

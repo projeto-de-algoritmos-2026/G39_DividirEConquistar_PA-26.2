@@ -1,12 +1,8 @@
-// aba "Ver o algoritmo": roda o parMaisProximo guardando os passos e depois
-// mostra um por um no mapa. os botoes e o placar sao criados aqui, em volta do
-// <canvas id="cvAlg"> que esta no index.html
-
 function iniciarAnimacao() {
   const canvas = document.getElementById("cvAlg");
   if (!canvas) return;
 
-  const DISTANCIA_MINIMA = 46; // mais espaco que no jogo, pra caber o numero
+  const DISTANCIA_MINIMA = 46;
 
   const estado = { pontos: [], eventos: [], passo: 0, timer: 0 };
 
@@ -50,13 +46,11 @@ function iniciarAnimacao() {
     estado.pontos = pontosAleatorios(Number($("algQtd").value), DISTANCIA_MINIMA);
     estado.eventos = [];
     const { best, comps } = parMaisProximo(estado.pontos, estado.eventos);
-    // um passo a mais no fim, so pra mostrar o resultado
     estado.eventos.push({ t: "fim", best, comps, lo: 0, hi: MAPA.largura, depth: 0 });
     estado.passo = 0;
     desenhar();
   }
 
-  // texto que aparece embaixo do mapa em cada passo
   function explicar(e) {
     const P = p => `P${p.id}`;
     switch (e.t) {
@@ -79,10 +73,8 @@ function iniciarAnimacao() {
     }
   }
 
-  // redesenha do passo 0 ate o atual toda vez. assim o "Voltar" funciona
-  // sem precisar guardar nada
   function desenhar() {
-    if (canvas.clientWidth === 0) return; // aba escondida
+    if (canvas.clientWidth === 0) return;
     const ctx = prepCanvas(canvas);
     const corDestaque = corCSS("--cor-destaque", "#d6286f");
     const corPar = corCSS("--cor-par", "#178f79");
@@ -95,7 +87,6 @@ function iniciarAnimacao() {
       const e = estado.eventos[i];
       if (e.t === "divide") linhas.push(e);
       if (e.t === "base" || e.t === "merge") {
-        // a regiao resolvida substitui os pares das sub-regioes dela
         resolvidas = resolvidas.filter(r => !(r.lo >= e.lo && r.hi <= e.hi));
         resolvidas.push(e);
       }
@@ -104,7 +95,6 @@ function iniciarAnimacao() {
 
     desenhaMapa(ctx);
 
-    // regiao da chamada atual
     if (e.t !== "fim") {
       ctx.save();
       ctx.globalAlpha = 0.08;
@@ -113,7 +103,6 @@ function iniciarAnimacao() {
       ctx.restore();
     }
 
-    // faixa de largura 2 delta em volta da linha
     if (e.t === "strip" || e.t === "scmp") {
       const x0 = Math.max(e.lo, e.x - e.delta);
       const x1 = Math.min(e.hi, e.x + e.delta);
@@ -124,7 +113,6 @@ function iniciarAnimacao() {
       ctx.restore();
     }
 
-    // linhas divisorias: mais fortes nos niveis mais altos da recursao
     for (const l of linhas) {
       ctx.save();
       ctx.strokeStyle = corTexto;
@@ -200,8 +188,6 @@ function iniciarAnimacao() {
     if (estado.timer) { parar(); reproduzir(); }
   });
 
-  // redesenha quando a aba aparece ou a janela muda de tamanho.
-  // se trocar de aba no meio da animacao, pausa
   new ResizeObserver(() => {
     if (canvas.clientWidth === 0) parar();
     else desenhar();

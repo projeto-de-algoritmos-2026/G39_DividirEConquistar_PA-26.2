@@ -1,6 +1,3 @@
-// aba "Desempenho": roda a forca bruta e o dividir e conquistar com os mesmos
-// pontos, pra varios tamanhos, e compara comparacoes e tempo
-
 const TAMANHOS_BENCHMARK = [10, 50, 100, 500, 1000, 2000, 5000];
 
 function medirTamanho(n) {
@@ -67,7 +64,6 @@ function iniciarBenchmark() {
   function rodar() {
     botao.disabled = true;
     tabela.innerHTML = `<tr><td colspan="7">Medindo…</td></tr>`;
-    // o setTimeout e so pra dar tempo de aparecer o "Medindo…" antes das contas
     setTimeout(() => {
       const medicoes = TAMANHOS_BENCHMARK.map(medirTamanho);
       tabela.innerHTML = medicoes.map(m => `
@@ -88,8 +84,7 @@ function iniciarBenchmark() {
   function desenharGrafico(medicoes) {
     const svg = document.getElementById("benchGrafico");
     const ESQ = 64, DIR = 620, TOPO = 16, BASE = 250;
-    const MIN_EXP = 1, MAX_EXP = 8; // eixo y de 10 a 10^8
-    // escala logaritmica nos dois eixos, senao a linha do D&C fica colada no zero
+    const MIN_EXP = 1, MAX_EXP = 8;
     const logMin = Math.log10(medicoes[0].n);
     const logMax = Math.log10(medicoes[medicoes.length - 1].n);
     const x = i => ESQ + (DIR - ESQ) * (Math.log10(medicoes[i].n) - logMin) / (logMax - logMin);
@@ -125,7 +120,6 @@ function iniciarBenchmark() {
 
   botao.addEventListener("click", rodar);
 
-  // roda sozinho na primeira vez que abrir a aba
   const observador = new ResizeObserver(() => {
     if (secao.clientWidth > 0) {
       observador.disconnect();

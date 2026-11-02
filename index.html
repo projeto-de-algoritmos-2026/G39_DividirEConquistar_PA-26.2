@@ -17,7 +17,6 @@
     <span class="grade"></span>
   </div>
 
-  <!-- tela inicial -->
   <section class="tela-inicio" id="tela-inicio">
     <div class="cartao-inicio">
       <span class="selo"><i class="ponto-vivo"></i>G39 · Dividir e Conquistar</span>
@@ -54,7 +53,6 @@
       <button type="button" class="aba" role="tab" id="aba-desempenho" data-aba="desempenho">3. Desempenho</button>
     </nav>
 
-    <!-- aba 1: jogo (jogo.js) -->
     <section class="painel" id="view-jogar">
       <div class="barra">
         <div class="grupo">
@@ -82,7 +80,6 @@
       </p>
     </section>
 
-    <!-- aba 2: animacao (os botoes sao criados pelo animacao.js) -->
     <section class="painel" id="view-algoritmo" hidden>
       <canvas id="cvAlg" aria-label="Animação do algoritmo de par mais próximo"></canvas>
       <p class="legenda">
@@ -92,7 +89,6 @@
       </p>
     </section>
 
-    <!-- aba 3: desempenho (preenchida pelo benchmark.js) -->
     <section class="painel" id="view-desempenho" hidden></section>
 
     <footer class="rodape">
@@ -119,7 +115,6 @@
   <script src="animacao.js"></script>
   <script src="benchmark.js"></script>
   <script>
-    // a aba aberta fica no endereco (#jogar, #algoritmo, #desempenho). sem hash reconhecido, mostra a tela inicial
     const ABAS = ["jogar", "algoritmo", "desempenho"];
     const telaInicio = document.getElementById("tela-inicio");
     const app = document.getElementById("app");
