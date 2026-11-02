@@ -1,0 +1,207 @@
+/* cores e fontes do site. o canvas tambem le essas variaveis (desenho.js,
+   jogo.js, animacao.js, benchmark.js), entao mudar aqui muda o mapa junto */
+:root {
+  --cor-fundo: #fbf4f8;
+  --cor-superficie: #ffffff;
+  --cor-texto: #2b1d34;
+  --cor-texto-suave: #76627f;
+  --cor-linha: #ead9e4;
+  --cor-destaque: #d6286f;   /* botoes, par sendo comparado, forca bruta */
+  --cor-par: #178f79;        /* par mais proximo, dividir e conquistar */
+  --cor-faixa: #e09b00;      /* faixa de largura 2 delta */
+  --cor-voce: #e09b00;       /* par escolhido pelo jogador */
+  --cor-mapa: #f1faf4;
+  --cor-rua: #dceee3;
+
+  --fonte-titulo: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --fonte-texto: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fonte-numero: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cor-fundo: #1a1320;
+    --cor-superficie: #241a2c;
+    --cor-texto: #f5e8f1;
+    --cor-texto-suave: #b6a2bf;
+    --cor-linha: #3a2c44;
+    --cor-destaque: #ff5a9a;
+    --cor-par: #43d1b4;
+    --cor-faixa: #ffc53d;
+    --cor-voce: #ffc53d;
+    --cor-mapa: #1c2622;
+    --cor-rua: #2a3832;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte-texto);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.pagina {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 28px 16px 48px;
+  display: grid;
+  gap: 20px;
+}
+
+/* ---------- cabecalho e abas ---------- */
+.cabecalho { display: grid; gap: 6px; }
+.selo {
+  justify-self: start;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--cor-destaque);
+  border: 1.5px dashed var(--cor-destaque);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+h1 {
+  font-family: var(--fonte-titulo);
+  font-weight: 800;
+  font-size: clamp(34px, 6vw, 52px);
+  line-height: 1;
+  margin: 6px 0 0;
+}
+h1 span { color: var(--cor-destaque); }
+.missao { margin: 0; color: var(--cor-texto-suave); max-width: 62ch; }
+
+.abas { display: flex; flex-wrap: wrap; gap: 8px; }
+.aba {
+  font: 700 15px var(--fonte-texto);
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 2px solid var(--cor-linha);
+  border-radius: 999px;
+  padding: 7px 16px;
+  cursor: pointer;
+}
+.aba[aria-selected="true"] { background: var(--cor-texto); color: var(--cor-fundo); border-color: var(--cor-texto); }
+
+/* ---------- paineis ---------- */
+.painel {
+  background: var(--cor-superficie);
+  border: 2px solid var(--cor-linha);
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.painel[hidden] { display: none; }
+
+canvas {
+  width: 100%;
+  aspect-ratio: 800 / 480;
+  display: block;
+  border-radius: 12px;
+}
+#cvJogo { cursor: pointer; }
+
+/* botoes e seletores (inclusive os criados por animacao.js e benchmark.js) */
+.painel button {
+  font: 700 14px var(--fonte-texto);
+  color: var(--cor-texto);
+  background: transparent;
+  border: 2px solid var(--cor-linha);
+  border-radius: 10px;
+  padding: 7px 13px;
+  cursor: pointer;
+}
+.painel button.principal, #algPlay, #benchRodar {
+  background: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+  color: #fff;
+}
+.painel button:disabled { opacity: .45; cursor: default; }
+select {
+  font: 600 14px var(--fonte-texto);
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 2px solid var(--cor-linha);
+  border-radius: 10px;
+  padding: 5px 8px;
+}
+label { font-size: 14px; color: var(--cor-texto-suave); display: inline-flex; gap: 6px; align-items: center; }
+button:focus-visible, select:focus-visible { outline: 3px solid var(--cor-faixa); outline-offset: 2px; }
+
+.barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.grupo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.numero { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; font-size: 18px; }
+.dica { font-size: 14px; color: var(--cor-texto-suave); }
+
+.mensagem, .alg-mensagem {
+  margin: 0;
+  background: var(--cor-fundo);
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-height: 3.2em;
+}
+.mensagem strong, .alg-mensagem strong { font-family: var(--fonte-titulo); font-size: 19px; }
+
+/* placar do jogo e da animacao */
+.placar, .alg-placar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+.placar[hidden] { display: none; }
+.placar > div, .alg-placar > div { border-top: 3px solid var(--cor-linha); padding-top: 6px; }
+.placar span, .alg-placar span {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+.placar strong, .alg-placar strong {
+  font-family: var(--fonte-numero);
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  font-weight: 500;
+}
+.placar .voce { border-color: var(--cor-voce); }
+.placar .par, .alg-placar > div:nth-child(3) { border-color: var(--cor-par); }
+.placar .bruta, .alg-placar > div:nth-child(4) { border-color: var(--cor-destaque); }
+
+.alg-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+.legenda { margin: 0; display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--cor-texto-suave); }
+.traco { display: inline-block; width: 22px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.traco.voce { background: var(--cor-voce); }
+.traco.par { background: var(--cor-par); }
+.traco.destaque { background: var(--cor-destaque); }
+.traco.faixa { background: var(--cor-faixa); }
+
+/* ---------- desempenho (benchmark.js) ---------- */
+.benchmark { display: grid; gap: 12px; min-width: 0; }
+.benchmark-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.benchmark-topo h2 { font-family: var(--fonte-titulo); font-size: 20px; margin: 0; }
+.benchmark-grafico, .benchmark-tabela { overflow-x: auto; }
+.benchmark-grafico svg { width: 100%; min-width: 520px; height: auto; display: block; }
+.benchmark-legenda { margin: 0; display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--cor-texto-suave); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--cor-linha); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--cor-texto-suave); }
+td { font-family: var(--fonte-numero); font-variant-numeric: tabular-nums; }
+
+/* ---------- rodape ---------- */
+.rodape { font-size: 14px; color: var(--cor-texto-suave); }
+.rodape p { margin: 0; }
+.rodape a { color: var(--cor-destaque); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
