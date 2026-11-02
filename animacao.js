@@ -1,31 +1,15 @@
-// aba "Ver o algoritmo": reproduz, passo a passo, os eventos que
-// parMaisProximo(pontos, eventos) registra.
-//
-// depende de:
-//   par-mais-proximo.js -> parMaisProximo
-//   desenho.js          -> prepCanvas(canvas) (devolve o ctx ja escalado pra 800 x 480),
-//                          desenhaMapa(ctx),
-//                          desenhaPersonagem(ctx, ponto, { apagada, anel, rotulo }),
-//                          linhaPar(ctx, a, b, cor, { tracejado, texto, largura })
-//   index.html          -> <canvas id="cvAlg">; os controles, a mensagem e o
-//                          placar sao criados aqui, em volta dele
-//
-// cores lidas do css (com valor padrao se a variavel nao existir):
-//   --cor-destaque (par sendo comparado), --cor-par (melhor par de cada regiao),
-//   --cor-faixa (faixa de largura 2 delta), --cor-texto (linhas divisorias)
+// aba "Ver o algoritmo": roda o parMaisProximo guardando os passos e depois
+// mostra um por um no mapa. os botoes e o placar sao criados aqui, em volta do
+// <canvas id="cvAlg"> que esta no index.html
 
 function iniciarAnimacao() {
   const canvas = document.getElementById("cvAlg");
   if (!canvas) return;
 
-  const LARGURA = 800;
-  const ALTURA = 480;
-  const MARGEM = 32;
-  const DISTANCIA_MINIMA = 46; // espaco entre personagens pra caber o numero
+  const DISTANCIA_MINIMA = 46; // mais espaco que no jogo, pra caber o numero
 
   const estado = { pontos: [], eventos: [], passo: 0, timer: 0 };
 
-  // ---- controles, mensagem e placar ----
   const controles = document.createElement("div");
   controles.className = "alg-controles";
   controles.innerHTML = `
@@ -61,70 +45,49 @@ function iniciarAnimacao() {
   const formatarNumero = n => n.toLocaleString("pt-BR");
   const formatarDistancia = d => d.toFixed(1).replace(".", ",") + " m";
 
-  function cor(nome, padrao) {
-    return getComputedStyle(document.documentElement).getPropertyValue(nome).trim() || padrao;
-  }
-
-  // ---- pontos e eventos ----
-  function gerarPontos(n) {
-    const pontos = [];
-    let tentativas = 0;
-    while (pontos.length < n && tentativas++ < 20000) {
-      const p = {
-        x: MARGEM + Math.random() * (LARGURA - 2 * MARGEM),
-        y: MARGEM + Math.random() * (ALTURA - 2 * MARGEM),
-      };
-      if (pontos.every(q => Math.hypot(p.x - q.x, p.y - q.y) >= DISTANCIA_MINIMA)) {
-        pontos.push({ id: pontos.length + 1, ...p });
-      }
-    }
-    return pontos;
-  }
-
   function novosPontos() {
     parar();
-    estado.pontos = gerarPontos(Number($("algQtd").value));
+    estado.pontos = pontosAleatorios(Number($("algQtd").value), DISTANCIA_MINIMA);
     estado.eventos = [];
     const { best, comps } = parMaisProximo(estado.pontos, estado.eventos);
-    // passo extra no fim so pra mostrar o resultado final
-    estado.eventos.push({ t: "fim", best, comps, lo: 0, hi: LARGURA, depth: 0 });
+    // um passo a mais no fim, so pra mostrar o resultado
+    estado.eventos.push({ t: "fim", best, comps, lo: 0, hi: MAPA.largura, depth: 0 });
     estado.passo = 0;
     desenhar();
   }
 
-  // ---- texto de cada passo ----
+  // texto que aparece embaixo do mapa em cada passo
   function explicar(e) {
     const P = p => `P${p.id}`;
     switch (e.t) {
       case "divide":
-        return `<strong>Dividir.</strong> ${e.n} pontos nesta região. A linha vertical separa ${e.m} à esquerda e ${e.n - e.m} à direita, e cada lado é resolvido separadamente.`;
+        return `<strong>Dividir:</strong> ${e.n} pontos aqui. A linha corta no meio, ${e.m} de um lado e ${e.n - e.m} do outro, e cada lado é resolvido sozinho.`;
       case "cmp":
-        return `<strong>Caso base (até 3 pontos).</strong> Com poucos pontos, compara direto: ${P(e.a)} e ${P(e.b)} estão a ${formatarDistancia(e.d)}.`;
+        return `<strong>Caso base:</strong> são 3 pontos ou menos, então compara um por um. ${P(e.a)} e ${P(e.b)} estão a ${formatarDistancia(e.d)}.`;
       case "base":
-        return `<strong>Caso base resolvido.</strong> O melhor par desta região é ${P(e.best.a)}–${P(e.best.b)}, a ${formatarDistancia(e.best.d)}.`;
+        return `<strong>Melhor par dessa parte:</strong> ${P(e.best.a)} e ${P(e.best.b)}, a ${formatarDistancia(e.best.d)}.`;
       case "strip":
-        return `<strong>Combinar.</strong> O melhor dos dois lados é δ = ${formatarDistancia(e.delta)}. Um par melhor só pode cruzar a linha se os dois pontos estiverem a menos de δ dela: ${e.ids.length} ponto(s) na faixa.`;
+        return `<strong>Juntar os lados:</strong> o menor até agora é δ = ${formatarDistancia(e.delta)}. Só quem está a menos de δ da linha pode formar um par melhor, então sobram ${e.ids.length} ponto(s) na faixa.`;
       case "scmp":
-        return `<strong>Checando a faixa.</strong> Em ordem de y, ${P(e.a)} e ${P(e.b)} estão a ${formatarDistancia(e.d)}. ${e.melhor ? "Novo melhor par!" : "Não melhora."}`;
+        return `<strong>Na faixa:</strong> ${P(e.a)} e ${P(e.b)} estão a ${formatarDistancia(e.d)}. ${e.melhor ? "Novo melhor par!" : "Não melhora."}`;
       case "merge":
-        return `<strong>Região resolvida.</strong> Melhor par: ${P(e.best.a)}–${P(e.best.b)}, a ${formatarDistancia(e.best.d)}. Volta um nível na recursão.`;
+        return `<strong>Essa parte terminou:</strong> melhor par ${P(e.best.a)} e ${P(e.best.b)}, a ${formatarDistancia(e.best.d)}. Volta um nível.`;
       case "fim": {
         const n = estado.pontos.length;
-        return `<strong>Pronto: ${P(e.best.a)} e ${P(e.best.b)}, a ${formatarDistancia(e.best.d)}.</strong> Foram ${formatarNumero(e.comps)} comparações; a força bruta faria ${formatarNumero(n * (n - 1) / 2)}.`;
+        return `<strong>Achou: ${P(e.best.a)} e ${P(e.best.b)}, a ${formatarDistancia(e.best.d)}.</strong> Foram ${formatarNumero(e.comps)} comparações, a força bruta faria ${formatarNumero(n * (n - 1) / 2)}.`;
       }
     }
   }
 
-  // ---- desenho ----
-  // refaz tudo do evento 0 ate o passo atual, assim o "Voltar" nao precisa
-  // guardar estado nenhum
+  // redesenha do passo 0 ate o atual toda vez. assim o "Voltar" funciona
+  // sem precisar guardar nada
   function desenhar() {
     if (canvas.clientWidth === 0) return; // aba escondida
     const ctx = prepCanvas(canvas);
-    const corDestaque = cor("--cor-destaque", "#d6286f");
-    const corPar = cor("--cor-par", "#178f79");
-    const corFaixa = cor("--cor-faixa", "#e09b00");
-    const corTexto = cor("--cor-texto", "#2b1d34");
+    const corDestaque = corCSS("--cor-destaque", "#d6286f");
+    const corPar = corCSS("--cor-par", "#178f79");
+    const corFaixa = corCSS("--cor-faixa", "#e09b00");
+    const corTexto = corCSS("--cor-texto", "#2b1d34");
 
     const linhas = [];
     let resolvidas = [];
@@ -146,7 +109,7 @@ function iniciarAnimacao() {
       ctx.save();
       ctx.globalAlpha = 0.08;
       ctx.fillStyle = corDestaque;
-      ctx.fillRect(e.lo, 0, e.hi - e.lo, ALTURA);
+      ctx.fillRect(e.lo, 0, e.hi - e.lo, MAPA.altura);
       ctx.restore();
     }
 
@@ -157,7 +120,7 @@ function iniciarAnimacao() {
       ctx.save();
       ctx.globalAlpha = 0.22;
       ctx.fillStyle = corFaixa;
-      ctx.fillRect(x0, 0, x1 - x0, ALTURA);
+      ctx.fillRect(x0, 0, x1 - x0, MAPA.altura);
       ctx.restore();
     }
 
@@ -170,7 +133,7 @@ function iniciarAnimacao() {
       ctx.setLineDash([6, 6]);
       ctx.beginPath();
       ctx.moveTo(l.x, 0);
-      ctx.lineTo(l.x, ALTURA);
+      ctx.lineTo(l.x, MAPA.altura);
       ctx.stroke();
       ctx.restore();
     }
@@ -204,7 +167,6 @@ function iniciarAnimacao() {
     $("algAvancar").disabled = estado.passo === estado.eventos.length - 1;
   }
 
-  // ---- reproducao ----
   function parar() {
     clearInterval(estado.timer);
     estado.timer = 0;
@@ -238,8 +200,8 @@ function iniciarAnimacao() {
     if (estado.timer) { parar(); reproduzir(); }
   });
 
-  // redesenha quando a aba aparece ou a tela muda de tamanho; se a aba for
-  // escondida no meio da reproducao, pausa
+  // redesenha quando a aba aparece ou a janela muda de tamanho.
+  // se trocar de aba no meio da animacao, pausa
   new ResizeObserver(() => {
     if (canvas.clientWidth === 0) parar();
     else desenhar();
