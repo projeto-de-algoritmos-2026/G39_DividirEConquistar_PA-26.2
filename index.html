@@ -9,8 +9,40 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="pagina">
+  <div class="aura-fundo" aria-hidden="true">
+    <span class="bolha bolha-1"></span>
+    <span class="bolha bolha-2"></span>
+    <span class="bolha bolha-3"></span>
+    <span class="bolha bolha-4"></span>
+    <span class="grade"></span>
+  </div>
+
+  <!-- tela inicial -->
+  <section class="tela-inicio" id="tela-inicio">
+    <div class="cartao-inicio">
+      <span class="selo"><i class="ponto-vivo"></i>G39 · Dividir e Conquistar</span>
+      <h1>Vizinhas de <span class="gradiente">Pista</span></h1>
+      <p class="missao">Um monte de amigas estacionou pelo mapa. Descubra quais duas pararam mais perto uma da outra e depois veja como o dividir e conquistar resolve isso.</p>
+      <div class="botoes-inicio">
+        <button type="button" class="principal" id="btnJogar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+          Jogar
+        </button>
+        <button type="button" class="secundario" id="btnVerAlgoritmo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.4"></circle><circle cx="5" cy="18" r="2.4"></circle><circle cx="18" cy="12" r="2.4"></circle><path d="M7 7l9 4M7 17l9-4"></path></svg>
+          Ver algoritmo
+        </button>
+        <button type="button" class="fantasma" id="btnComoJogar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.3 9.2a2.7 2.7 0 1 1 3.6 2.5c-.9.4-1.4 1-1.4 1.9v.3"></path><circle cx="12" cy="16.7" r=".4" fill="currentColor" stroke="none"></circle></svg>
+          Como jogar
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="pagina app" id="app" hidden>
     <header class="cabecalho">
+      <button type="button" class="voltar" id="btnVoltarInicio" title="Voltar para o início">← Início</button>
       <span class="selo">G39 · Dividir e Conquistar</span>
       <h1>Vizinhas de <span>Pista</span></h1>
       <p class="missao">Um monte de amigas estacionou pelo mapa. Descubra quais duas pararam mais perto uma da outra e depois veja como o dividir e conquistar resolve isso.</p>
@@ -68,28 +100,64 @@
     </footer>
   </div>
 
+  <dialog class="modal-instrucoes" id="modalComoJogar">
+    <h2>Como jogar</h2>
+    <ol>
+      <li>Escolha quantas amigas vão aparecer no mapa (20, 35 ou 60) e clique em <strong>Nova rodada</strong>.</li>
+      <li>Olhe o mapa e ache, no olho, as duas amigas que pararam mais perto uma da outra.</li>
+      <li>Clique nela, depois clique na outra, para formar seu par.</li>
+      <li>O jogo mostra na hora se você acertou, comparando seu par com o par encontrado pelo algoritmo de dividir e conquistar.</li>
+      <li>Quanto mais amigas no mapa, mais fácil o olho se confundir — e mais clara fica a vantagem do algoritmo.</li>
+    </ol>
+    <p class="dica-modal">Curiosidade: dá pra ver o algoritmo resolvendo o mesmo problema passo a passo na aba "Ver o algoritmo", e comparar a velocidade dele com a força bruta na aba "Desempenho".</p>
+    <button type="button" class="principal" id="fecharModalComoJogar">Entendi</button>
+  </dialog>
+
   <script src="par-mais-proximo.js"></script>
   <script src="desenho.js"></script>
   <script src="jogo.js"></script>
   <script src="animacao.js"></script>
   <script src="benchmark.js"></script>
   <script>
-    // a aba aberta fica no endereco (#jogar, #algoritmo, #desempenho)
+    // a aba aberta fica no endereco (#jogar, #algoritmo, #desempenho). sem hash reconhecido, mostra a tela inicial
     const ABAS = ["jogar", "algoritmo", "desempenho"];
+    const telaInicio = document.getElementById("tela-inicio");
+    const app = document.getElementById("app");
 
     function mostrarAba(nome) {
-      if (!ABAS.includes(nome)) nome = "jogar";
       for (const aba of ABAS) {
         document.getElementById("view-" + aba).hidden = aba !== nome;
         document.getElementById("aba-" + aba).setAttribute("aria-selected", aba === nome);
       }
     }
 
+    function mostrarTela(hash) {
+      if (ABAS.includes(hash)) {
+        telaInicio.hidden = true;
+        app.hidden = false;
+        mostrarAba(hash);
+      } else {
+        app.hidden = true;
+        telaInicio.hidden = false;
+      }
+    }
+
     document.querySelectorAll(".aba").forEach(botao => {
       botao.addEventListener("click", () => { location.hash = botao.dataset.aba; });
     });
-    window.addEventListener("hashchange", () => mostrarAba(location.hash.slice(1)));
-    mostrarAba(location.hash.slice(1));
+    document.getElementById("btnJogar").addEventListener("click", () => { location.hash = "jogar"; });
+    document.getElementById("btnVerAlgoritmo").addEventListener("click", () => { location.hash = "algoritmo"; });
+    document.getElementById("btnVoltarInicio").addEventListener("click", () => { location.hash = "inicio"; });
+
+    const modalComoJogar = document.getElementById("modalComoJogar");
+    document.getElementById("btnComoJogar").addEventListener("click", () => { modalComoJogar.showModal(); });
+    document.getElementById("fecharModalComoJogar").addEventListener("click", () => { modalComoJogar.close(); });
+    modalComoJogar.addEventListener("click", (evento) => {
+      if (evento.target === modalComoJogar) modalComoJogar.close();
+    });
+
+    window.addEventListener("hashchange", () => mostrarTela(location.hash.slice(1)));
+    mostrarTela(location.hash.slice(1));
   </script>
 </body>
 </html>
