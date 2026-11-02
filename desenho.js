@@ -1,23 +1,36 @@
-// funcoes de desenho no canvas, usadas pelo jogo (jogo.js) e pela
-// animacao do algoritmo (animacao.js).
-//
-// tudo e desenhado num espaco logico de 800 x 480 (o mesmo das coordenadas
-// dos pontos); prepCanvas cuida de escalar isso pro tamanho real da tela.
+// coisas usadas pelo jogo e pela animacao: pontos aleatorios e desenho no canvas.
+// tudo e desenhado num mapa de 800 x 480, e o prepCanvas escala pro tamanho da tela
 
 const MAPA = { largura: 800, altura: 480 };
+const MARGEM_MAPA = 32;
 
-// uma cor por personagem, escolhida pelo id do ponto
+// uma cor por personagem, escolhida pelo id
 const CORES_PERSONAGEM = ["#ff7aa8", "#6fd0bb", "#ffc94d", "#a08fff", "#ff9f6b", "#6cb8ff"];
 
-// le uma variavel de cor do style.css (ex.: "--cor-mapa"), com valor padrao
-// caso ela nao exista
+// sorteia n pontos no mapa, sem deixar dois mais perto que distanciaMinima
+// (senao ficam um em cima do outro e nao da pra clicar)
+function pontosAleatorios(n, distanciaMinima) {
+  const pontos = [];
+  let tentativas = 0;
+  while (pontos.length < n && tentativas++ < 30000) {
+    const p = {
+      x: MARGEM_MAPA + Math.random() * (MAPA.largura - 2 * MARGEM_MAPA),
+      y: MARGEM_MAPA + Math.random() * (MAPA.altura - 2 * MARGEM_MAPA),
+    };
+    if (pontos.every(q => Math.hypot(p.x - q.x, p.y - q.y) >= distanciaMinima)) {
+      pontos.push({ id: pontos.length + 1, ...p });
+    }
+  }
+  return pontos;
+}
+
+// pega uma cor do style.css, ex.: corCSS("--cor-mapa", "#f1faf4")
 function corCSS(nome, padrao) {
   return getComputedStyle(document.documentElement).getPropertyValue(nome).trim() || padrao;
 }
 
-// ajusta o tamanho real do canvas a largura que ele ocupa na tela (e a
-// densidade de pixels do aparelho, pra nao ficar borrado) e devolve o ctx
-// ja escalado pro espaco 800 x 480
+// deixa o canvas do tamanho que ele ocupa na tela (contando o devicePixelRatio,
+// pra nao ficar borrado no celular) e devolve o ctx ja na escala do mapa
 function prepCanvas(canvas) {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
@@ -55,9 +68,8 @@ function desenhaMapa(ctx) {
   ctx.restore();
 }
 
-// desenha a personagem na posicao do ponto.
-// opcoes: apagada (fica transparente), anel (cor do contorno de destaque),
-// rotulo (mostra o numero do id no lugar do rostinho)
+// apagada: fica transparente | anel: cor do contorno em volta |
+// rotulo: mostra o numero no lugar do rostinho (usado na animacao)
 function desenhaPersonagem(ctx, ponto, { apagada = false, anel = null, rotulo = false } = {}) {
   const { x, y } = ponto;
   const corRosto = "#2b1d34";
@@ -102,8 +114,7 @@ function desenhaPersonagem(ctx, ponto, { apagada = false, anel = null, rotulo = 
   ctx.restore();
 }
 
-// linha entre dois pontos.
-// opcoes: largura, tracejado, texto (rotulo no meio da linha, ex.: a distancia)
+// linha entre dois pontos. texto aparece no meio dela (a distancia, por exemplo)
 function linhaPar(ctx, a, b, cor, { largura = 3, tracejado = false, texto = null } = {}) {
   ctx.save();
   ctx.strokeStyle = cor;
