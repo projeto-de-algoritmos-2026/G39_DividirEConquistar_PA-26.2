@@ -18,7 +18,7 @@
 </head>
 <body>
   <h1>Testes do par mais próximo</h1>
-  <p>Compara o dividir e conquistar (<code>parMaisProximo</code>) com a força bruta (<code>forcaBruta</code>), que serve de gabarito. Os dois precisam achar a mesma distância.</p>
+  <p>Roda o dividir e conquistar e a força bruta nos mesmos pontos. Se os dois acharem a mesma distância, o teste passa.</p>
   <div class="resumo" id="resumo">Rodando…</div>
   <table>
     <thead><tr><th>Caso</th><th>Pontos</th><th>Distância</th><th>Comparações FB</th><th>Comparações D&amp;C</th><th>Resultado</th></tr></thead>
@@ -28,11 +28,11 @@
 
   <script src="par-mais-proximo.js"></script>
   <script>
-    // como as coordenadas sao numeros quebrados, compara com uma folga minima
+    // folga pequena porque as coordenadas sao numeros quebrados
     const mesmaDistancia = (d1, d2) => Math.abs(d1 - d2) < 1e-9;
 
-    // gera n pontos aleatorios. "inteiros" deixa as coordenadas inteiras num
-    // intervalo pequeno, o que forca empates de x, de y e pontos repetidos
+    // com "inteiros" as coordenadas ficam entre 0 e 49, o que forca x iguais,
+    // y iguais e pontos repetidos
     function pontosAleatorios(n, inteiros) {
       const pontos = [];
       for (let i = 0; i < n; i++) {
@@ -79,8 +79,8 @@
       });
       document.getElementById("especiais").innerHTML = linhas.join("");
 
-      // 500 conjuntos aleatorios de 2 a 2000 pontos, mais pequenos que grandes
-      // (a forca bruta e lenta), metade com coordenadas inteiras
+      // 500 conjuntos de 2 a 2000 pontos. sai mais conjunto pequeno que grande
+      // porque a forca bruta demora
       for (let i = 0; i < 500; i++) {
         const n = 2 + Math.floor(Math.random() ** 3 * 1999);
         const { passou } = testar(`aleatório #${i + 1}`, pontosAleatorios(n, i % 2 === 0));
