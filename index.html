@@ -13,7 +13,7 @@
     <header class="cabecalho">
       <span class="selo">G39 · Dividir e Conquistar</span>
       <h1>Vizinhas de <span>Pista</span></h1>
-      <p class="missao">Encontre as duas amigas que estacionaram mais perto uma da outra. Depois veja como o algoritmo de dividir e conquistar acha a resposta sem comparar todos os pares.</p>
+      <p class="missao">Um monte de amigas estacionou pelo mapa. Descubra quais duas pararam mais perto uma da outra e depois veja como o dividir e conquistar resolve isso.</p>
     </header>
 
     <nav class="abas" role="tablist">
@@ -50,7 +50,7 @@
       </p>
     </section>
 
-    <!-- aba 2: animacao do algoritmo (animacao.js monta os controles em volta do canvas) -->
+    <!-- aba 2: animacao (os botoes sao criados pelo animacao.js) -->
     <section class="painel" id="view-algoritmo" hidden>
       <canvas id="cvAlg" aria-label="Animação do algoritmo de par mais próximo"></canvas>
       <p class="legenda">
@@ -60,11 +60,11 @@
       </p>
     </section>
 
-    <!-- aba 3: desempenho (benchmark.js preenche) -->
+    <!-- aba 3: desempenho (preenchida pelo benchmark.js) -->
     <section class="painel" id="view-desempenho" hidden></section>
 
     <footer class="rodape">
-      <p>Projeto de Algoritmos · Dividir e Conquistar · par de pontos mais próximos em O(n log n). <a href="testes.html">Ver os testes do algoritmo</a>.</p>
+      <p>Projeto de Algoritmos 2026.2 · G39 · <a href="testes.html">testes do algoritmo</a></p>
     </footer>
   </div>
 
@@ -74,7 +74,7 @@
   <script src="animacao.js"></script>
   <script src="benchmark.js"></script>
   <script>
-    // abas: a aba ativa fica no endereco (#jogar, #algoritmo, #desempenho)
+    // a aba aberta fica no endereco (#jogar, #algoritmo, #desempenho)
     const ABAS = ["jogar", "algoritmo", "desempenho"];
 
     function mostrarAba(nome) {
