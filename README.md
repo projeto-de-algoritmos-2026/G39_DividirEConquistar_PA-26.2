@@ -3,6 +3,8 @@
 **Grupo:** G39<br>
 **Conteúdo da disciplina:** Dividir e Conquistar
 
+![Tela inicial do jogo](img/tela-inicial.png)
+
 ## Alunos
 
 | Matrícula | Aluno |
@@ -21,6 +23,10 @@ O site tem três abas:
 - **Jogar:** você escolhe o par e depois vê se acertou, comparando com a resposta do algoritmo.
 - **Ver o algoritmo:** mostra a recursão acontecendo no mapa, passo a passo.
 - **Desempenho:** compara a força bruta com o dividir e conquistar para até 5.000 pontos.
+
+| Jogar | Ver o algoritmo | Desempenho |
+| --- | --- | --- |
+| ![Aba Jogar](img/aba-jogar.png) | ![Aba Ver o algoritmo](img/aba-algoritmo.png) | ![Aba Desempenho](img/aba-desempenho.png) |
 
 ## Como rodar
 
