@@ -12,6 +12,10 @@
 | 231026680 | Cibelly Lourenço |
 | 211039500 | Isabelle da Costa |
 
+## Apresentação
+
+O vídeo de apresentação do trabalho está no YouTube: [https://youtu.be/7vthBErmcno](https://youtu.be/7vthBErmcno)
+
 ## Sobre
 
 Um monte de amigas estacionou espalhado pelo mapa, e o jogador tem que descobrir quais duas pararam mais perto uma da outra. Parece fácil, mas com 35 ou 60 no mapa o olho engana bastante.
